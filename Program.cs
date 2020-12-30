@@ -20,9 +20,7 @@ namespace AdaptivePredicate
             Console.WriteLine("OK");
 
             var stopwatch = Stopwatch.StartNew();
-
             Parallel.For(0, 1000, x => ProcessRequest(x).Wait());
-            
             stopwatch.Stop();
 
             Console.WriteLine("DONE");

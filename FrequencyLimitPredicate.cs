@@ -28,22 +28,21 @@ namespace AdaptivePredicate
             lock (this.locker)
             {
                 var deltaMilliseconds = nowMilliseconds - this.currentBaseMilliseconds;
-                if (deltaMilliseconds >= 0 &&
-                    deltaMilliseconds < 1000)
+                if (deltaMilliseconds < 0 ||
+                    deltaMilliseconds >= 1000)
                 {
-                    if (this.currentExecutionsPerSecond < this.maxExecutionsPerSecond)
-                    {
-                        this.currentExecutionsPerSecond++;
-                        return true;
-                    }
-
-                    return false;
+                    this.currentBaseMilliseconds = nowMilliseconds;
+                    this.currentExecutionsPerSecond = 1;
+                    return true;
                 }
 
-                this.currentBaseMilliseconds = nowMilliseconds;
-                this.currentExecutionsPerSecond = 1;
+                if (this.currentExecutionsPerSecond < this.maxExecutionsPerSecond)
+                {
+                    this.currentExecutionsPerSecond++;
+                    return true;
+                }
 
-                return true;
+                return false;                
             }
         }
     }
