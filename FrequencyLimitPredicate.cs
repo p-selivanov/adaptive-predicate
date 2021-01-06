@@ -7,14 +7,14 @@ namespace AdaptivePredicate
         private readonly int maxExecutionsPerSecond;
         private readonly object locker;
         private int currentExecutionsPerSecond;
-        private int currentBaseMilliseconds;
+        private int currentBaseMs;
 
         public FrequencyLimitPredicate(int maxExecutionsPerSecond)
         {
             this.maxExecutionsPerSecond = maxExecutionsPerSecond;
             this.locker = new object();
             this.currentExecutionsPerSecond = 0;
-            this.currentBaseMilliseconds = Environment.TickCount;
+            this.currentBaseMs = Environment.TickCount;
         }
 
         public bool Evaluate()
@@ -24,14 +24,14 @@ namespace AdaptivePredicate
                 return false;
             }
 
-            var nowMilliseconds = Environment.TickCount;
+            var nowMs = Environment.TickCount;
             lock (this.locker)
             {
-                var deltaMilliseconds = nowMilliseconds - this.currentBaseMilliseconds;
+                var deltaMilliseconds = nowMs - this.currentBaseMs;
                 if (deltaMilliseconds < 0 ||
                     deltaMilliseconds >= 1000)
                 {
-                    this.currentBaseMilliseconds = nowMilliseconds;
+                    this.currentBaseMs = nowMs;
                     this.currentExecutionsPerSecond = 1;
                     return true;
                 }
